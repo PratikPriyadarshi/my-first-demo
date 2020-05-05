@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tns="http://icc.pharma.roche.com/leopard/PushEntities/request/v1_0/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://icc.pharma.roche.com/leopard/PushEntities/request/v1_0/">
+
+	<xs:complexType name="AuditTrailingParams">
+		<xs:sequence>
+			<xs:element name="SystemID" type="xs:string"/>
+			<xs:element name="RequestTimestamp" type="xs:dateTime"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="WSStatusInfo">
+		<xs:sequence>
+			<xs:element name="WSStatus" type="xs:string"/>
+			<xs:element name="WSErrorCode" type="xs:string"/>
+			<xs:element name="WSStatusMessage" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="FileAttachment">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="binaryData" type="xs:base64Binary"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="BatchControlRequest">
+		<xs:sequence>
+			<xs:element name="WSBatchSessionID" type="xs:string"/>
+			<xs:element name="WSRequestID" type="xs:string"/>
+			<xs:element name="AuditTrailingParams" type="tns:AuditTrailingParams"/>
+			<xs:element name="BatchProcesStatus">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="START"/>
+						<xs:enumeration value="END"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="EntityType">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="RI"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TotalEntitiesCount" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="BatchControlResponse">
+		<xs:sequence>
+			<xs:element name="WSBatchSessionID" type="xs:string"/>
+			<xs:element name="WSRequestID" type="xs:string"/>
+			<xs:element name="TotalEntitiesCount" type="xs:string"/>
+			<xs:element name="WSStatusInfo" type="tns:WSStatusInfo"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="PushEntityRequest">
+		<xs:sequence>
+			<xs:element name="WSBatchSessionID" type="xs:string"/>
+			<xs:element name="WSRequestID" type="xs:string"/>
+			<xs:element name="AuditTrailingParams" type="tns:AuditTrailingParams"/>
+			<xs:element name="DataEntitiesCount" type="xs:string"/>
+			<xs:element name="FileAttachment" type="tns:FileAttachment"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="PushEntityResponse">
+		<xs:sequence>
+			<xs:element name="WSBatchSessionID" type="xs:string"/>
+			<xs:element name="WSRequestID" type="xs:string"/>
+			<xs:element name="DataEntitiesCount" type="xs:string"/>
+			<xs:element name="WSStatusInfo" type="tns:WSStatusInfo"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="PushBatchControlRequest" type="tns:BatchControlRequest"/>
+	<xs:element name="PushBatchControlResponse" type="tns:BatchControlResponse"/>
+	<xs:element name="PushEntityRequest" type="tns:PushEntityRequest"/>
+	<xs:element name="PushEntityResponse" type="tns:PushEntityResponse"/>
+
+</xs:schema>

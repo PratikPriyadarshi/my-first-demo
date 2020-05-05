@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tns="http://icc.pharma.roche.com/leopard/PushEntities/request/v1_0/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://icc.pharma.roche.com/leopard/PushEntities/request/v1_0/">
+
+
+	<wsdl:types>
+
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://icc.pharma.roche.com/leopard/PushEntities/request/v1_0/" schemaLocation="pushEntity.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+
+	<wsdl:message name="PushBatchControlRequest">
+		<wsdl:part element="tns:PushBatchControlRequest" name="part1"/>
+	</wsdl:message>
+	<wsdl:message name="PushBatchControlResponse">
+		<wsdl:part element="tns:PushBatchControlResponse" name="part1"/>
+	</wsdl:message>
+
+	<wsdl:message name="PushEntityRequest">
+		<wsdl:part element="tns:PushEntityRequest" name="part1"/>
+	</wsdl:message>
+	<wsdl:message name="PushEntityResponse">
+		<wsdl:part element="tns:PushEntityResponse" name="part1"/>
+	</wsdl:message>
+
+	<wsdl:portType name="PushEntitiesPortType">
+		<wsdl:operation name="pushBatchControl">
+			<wsdl:input message="tns:PushBatchControlRequest" wsaw:Action="attachment"/>
+			<wsdl:output message="tns:PushBatchControlResponse" wsaw:Action="http://schemas.xmlsoap.org/wsdl/PushEntitiesPortType/AttachmentResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="pushReimbursementInfo">
+			<wsdl:input message="tns:PushEntityRequest" wsaw:Action="attachment1"/>
+			<wsdl:output message="tns:PushEntityResponse" wsaw:Action="http://schemas.xmlsoap.org/wsdl/PushEntitiesPortType/AttachmentResponse1"/>
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="PushEntitiesSOAP11Binding" type="tns:PushEntitiesPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="pushBatchControl">
+			<soap:operation soapAction="pushBatchControl" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="pushReimbursementInfo">
+			<soap:operation soapAction="pushReimbursementInfo" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="PushEntitiesSOAP12Binding" type="tns:PushEntitiesPortType">
+		<soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="pushBatchControl">
+			<soap12:operation soapAction="pushBatchControl" style="document"/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="pushReimbursementInfo">
+			<soap12:operation soapAction="pushReimbursementInfo" style="document"/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="PushEntities">
+		<wsdl:port binding="tns:PushEntitiesSOAP11Binding" name="PushEntitiesSOAP11port_http">
+			<soap:address location="https://apidev-emea.roche.com:21400/api/pharma/commercial/esb/pushEntities/v1"/>
+		</wsdl:port>
+		<wsdl:port binding="tns:PushEntitiesSOAP12Binding" name="PushEntitiesSOAP12port_http">
+			<soap12:address location="https://apidev-emea.roche.com:21400/api/pharma/commercial/esb/pushEntities/v1"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

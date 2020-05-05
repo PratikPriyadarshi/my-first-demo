@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xml-module="http://www.mulesoft.org/schema/mule/xml-module"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="acd9dc5e-814b-4de8-80bf-a709e8f7ec76">
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="d3002697-8003-4335-9332-2f5a62749474" basePath="/api/v1" >
+		<http:request-connection host="dummy.restapiexample.com" />
+	</http:request-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="4ae11d86-c9d7-4920-8d87-8330a4470bc1" >
+		<file:connection workingDir="C:\Users\priyadp1\AnypointStudio\studio-workspace\trainingemployee\src\main\resources\output" />
+	</file:config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="34d2b7f0-cc64-41b7-ae99-bd2a2d8fc9b1" >
+		<wsc:connection wsdlLocation="pushEntity.wsdl" service="PushEntities" port="PushEntitiesSOAP11port_http" address="https://apidev-emea.roche.com:21400/api/pharma/commercial/esb/pushEntities/v1" />
+	</wsc:config>
+	<flow name="trainingemployeeFlow1" doc:id="35d8d4a6-41bf-4c1d-b9b0-ecb0064398a7" >
+		<http:listener doc:name="Listener" doc:id="406aa1d1-8a70-4da7-bf89-1dab378e029c" config-ref="HTTP_Listener_config" path="/createXml" outputMimeType="application/xml"/>
+		<ee:transform doc:name="Transform Message" doc:id="553ee294-3341-4dd6-829a-8c66180e20d4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml encoding="UTF-8"
+var payload=["RPN","Name","Email","Title","language","training_loid","training_status","training_completion_date"]
+var filename="Test Demo Report 25-Mar-2020.csv"
+var textscan="textscan.045sgkh1mc3m0k14xx4k0001yqk0"
+var federated="federated.0gnbobq13g1rox12eqyra0i9q3mg"
+var version= '18.1'
+var uuid= "'{0E2DCEC8-2D8F-44ED-90A6-EB9FAC536C98}'"
+ns user http://www.tableausoftware.com/xml/user
+ns base https://tabemeas.roche.com
+ns xml http://www.w3.org/XML/1998/namespace
+---
+workbook @("original-version":version, "source-build":"2019.2.9 (20192.20.0218.0709)", "source-platform":'win', version: version, xml#base: base, user:user): {
+"document-format-change-manifest":{
+	"SheetIdentifierTracking" @(ignorable:'true', predowngraded:'true'):"",
+	"WindowsPersistSimpleIdentifiers": ""
+},
+"repository-location" @(id: 'desktop-publish' , path: '/workbooks' ,revision:'1.0'): "",
+"preferences":{
+	"preference" @(name: 'ui.encoding.shelf.height' ,value:'24'):"",
+	"preference" @(name: 'ui.shelf.height', value: '26'):""
+},
+datasources:{
+datasource @(caption: filename replace ".csv" with(''), inline: 'true', name: federated, version: version):{
+connection @(class:'federated'):{
+"named-connections":{
+	"named-connection" @(caption:filename replace ".csv" with(''), name:textscan):{
+		connection @(class: 'textscan', directory: 'Data/IRIS_PoC', filename: filename, server: '', "workgroup-auth-mode":'as-is') : ""	
+	}
+},
+relation @(connection:textscan, name:filename, table:"[" ++ filename ++ "]" replace "." with("#"), "type":'table'):
+{
+columns @("character-set": 'UTF-8', header:'yes', locale:'en_US', separator:','):
+{(payload map ((item, index) -> 
+        
+        column @(datatype: "string", name: item as String, ordinal: index) : ""
+)
+
+)}},
+"metadata-records":{
+	"metadata-record" @(class:'capability'):{
+		"remote-name": "",
+		"remote-type": 0,
+		"parent-name": "[" ++ filename ++ "]",
+		"remote-alias": "",
+		"aggregation": "Count",
+		"contains-null": "true",
+		"attributes":{
+			"attribute" @(datatype:'string', name:'character-set'): "&quot;UTF-8&quot;",
+			"attribute" @(datatype:'string', name:'collation'): "&quot;en_US&quot;",
+			"attribute" @(datatype:'string', name:'field-delimiter'): "&quot;,&quot;",
+			"attribute" @(datatype:'string', name:'header-row'): "&quot;true&quot;",
+			"attribute" @(datatype:'string', name:'locale'): "&quot;en_US&quot;",
+			"attribute" @(datatype:'string', name:'single-char'): "&quot;&quot;",
+		}
+		
+	},
+	(payload map ((item, index) -> 
+        
+        "metadata-record" @(class:'column'): {
+        	"remote-name" : item,
+        	"remote-type" : 129,
+        	"local-name" : "[" ++ item ++ "]",
+        	"parent-name" : "[" ++ filename ++ "]",
+        	"remote-alias" : item,
+        	"ordinal" : index,
+        	"local-type" : "string",
+        	"aggregation" : "Count",
+        	"scale" : 1,
+        	"width" : 1073741823,
+        	"contains-null" : true,
+        	"collation" @(flag :'0', name : 'LEN_RUS') : ""
+        }
+))	
+}},
+aliases @(enabled: 'yes'):"",
+column @(datatype:'integer', name:'[Number of Records]', role:'measure', "type":'quantitative', user#"auto-column":'numrec'):{
+	calculation @(class: 'tableau', formula:'1'):""
+ },
+(payload map ((item, index) -> 
+        				(column @(caption: upper(item replace "_" with " "), datatype: 'string', name: "[" ++ item ++ "]", role:'dimension', "type":'nominal'):"")  if((item[0] contains(/[a-z]/)) or (item contains("_"))) 
+					) ),
+layout @("dim-ordering":'alphabetic', "dim-percentage": '0.615845', "measure-ordering": 'alphabetic', "measure-percentage": '0.384155', "show-structure": 'true'): "",
+"semantic-values":{
+	"semantic-value" @(key:"[Country].[Name]", value:"&quot;United States&quot;"):""
+  }
+}},
+worksheets:{
+	worksheet @(name:'Sheet 1'):{
+		"repository-location" @(id: 'Sheet1', path:'/workbooks/desktop-publish',revision:''):"",
+		"table" : {
+			"view": {
+				"datasources":{
+					datasource @(caption: filename replace ".csv" with(''), name:federated):""
+				},
+				"datasource-dependencies" @(datasource: federated):{
+					(payload map ((item, index) -> 
+						(column @(caption: upper(item replace "_" with " "), datatype: 'string', name: "[" ++ item ++ "]", role:'dimension', "type":'nominal'):"")  if((item[0] contains(/[a-z]/)) or (item contains("_")))
+					) ),
+					(payload map ((item, index) -> 
+						(column @(datatype: 'string', name: "[" ++ item ++ "]", role:'dimension', "type":'nominal'):"") if(not (item[0] contains(/[a-z]/)) or (item contains("_")))
+					) ),
+					(payload map ((item, index) -> 
+						("column-instance" @(column: "[" ++ item ++ "]", derivation:'None', name:"[none:" ++ item ++ ":nk]" ,pivot: 'key', "type":'nominal'):"") 
+					) )
+				},
+				"aggregation" @(value:'true'):""
+			},
+			"style":{
+				"style-rule" @(element:'axis'):{
+					"format" @(attr:'width', field:"[" ++ federated ++ "].[attr:training_completion_date:ok]" ,value:'180'): ""
+				},
+				"style-rule" @(element:'cell'):{
+					"format" @(attr:'width', value:'5') : ""
+				}
+				
+			},
+			"panes":{
+				"pane" @("selection-relaxation-option": 'selection-relaxation-allow'):{
+					"view":{
+						"breakdown" @(value:'auto'): ""
+					},
+					"mark" @(class:'Automatic'): ""
+				}
+			},
+			"rows":"",
+			"cols":""
+		},
+		"simple-id" @(uuid:uuid):""
+	}
+ },
+ windows @("source-height":'44'):{
+ 	window @(class:'worksheet' ,maximized:'true', name:'Sheet 1'):{
+ 		cards:{
+ 			edge @(name:'left'):{
+ 				strip @(size:'160'):{
+ 					card @("type":'pages'):"",
+ 					card @("type":'filters'):"",
+ 					card @("type":'marks'):""
+ 					
+ 				}
+ 			},
+ 			edge @(name:'top'):{
+ 				strip @(size:'2147483647'):{
+ 					card @("type":'columns'):""
+ 				},
+ 				strip @(size:'226'):{
+ 					card @("type":'rows'):""
+ 				},
+ 				strip @(size:'30'):{
+ 					card @("type":'title'):""
+ 				}
+ 			}
+ 			
+ 		},
+ 		viewpoint:{
+ 			highlight: {
+ 				"color-one-way": {
+ 					(payload map ((item, index) -> 
+        				field : "[" ++ federated ++ "].[none:" ++ item ++ ":nk]"
+					))
+ 				}
+ 			}
+ 		},
+ 		"simple-id" @(uuid:uuid):""
+ 		
+ 	}
+ }
+
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5c067786-1e31-4ef1-a73b-b3c91f5fc53d" message="#[payload]"/>
+		<file:write doc:name="Write" doc:id="54ce3a13-c62f-4c60-bae0-59afcc39abf8" mode="CREATE_NEW" path="sample_report_with_table.twb" config-ref="File_Config"/>
+	</flow>
+	<flow name="trainingemployeeFlow2" doc:id="f7807852-1eda-4bf2-ad35-6291f99025b6" >
+		<http:listener doc:name="Listener" doc:id="fd62f89c-69a8-4537-94b3-b5d360437699" config-ref="HTTP_Listener_config" path="/transform"/>
+		<ee:transform doc:name="Transform Message" doc:id="11e1069d-dc13-4e28-86ac-53b5a3bc5a97" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml encoding="UTF-8"
+fun toUpper(str: String) = upper(str[0]) ++ str[1 to -1] replace "_" with " "
+fun prefix(str: String) = "([federated.09af44f1d22d24ac7a9680fd0e992c11].[none:" ++ str
+fun suffix(str: String) = str ++ ":nk] / "
+var inputdata = ["RPN", "last name", "Email", "LAST_NAME", "test"]
+var bracket = (inputdata reduce ((item, acc= "") -> acc ++ ")"))
+
+var row = ("([federated.09af44f1d22d24ac7a9680fd0e992c11].[none:"++
+	((inputdata reduce ((item, acc) -> acc ++ suffix(prefix(item)))) as String replace /.{3}$/ with(bracket) splitBy "(")[0])
+
+
+
+var row2 = ("([federated.09af44f1d22d24ac7a9680fd0e992c11].[none:"++
+	(inputdata reduce ((item, acc) -> acc ++ suffix(prefix(item)))) as String replace /.{3}$/ with(bracket))
+
+var row3 = row2 replace row with (row ++ ":nk] / ")
+	
+fun arryprefix(str: Array) = str map(item,index) -> "([federated.09af44f1d22d24ac7a9680fd0e992c11].[none:" ++ item
+---
+
+	outputData: {
+		Data : toUpper("training_completion_date"),
+		Rows: inputdata map(value,key) -> suffix(prefix(value)),
+		Row: row,
+		Row2: row2,
+		Row3: row3,
+		Bracket : bracket}
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="trainingemployeeFlow" doc:id="19d56045-5da9-4b9a-8b05-a3ad73bc0feb" >
+		<http:listener doc:name="Listener" doc:id="e5f882ac-acb8-4873-986a-479b2da4139d" config-ref="HTTP_Listener_config" path="/raj"/>
+		<ee:transform doc:name="Transform Message" doc:id="05c5fd01-3308-4368-afc0-7277f6e9a6fa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{"abc": "myOrderNumber_US-EN"}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="4b0efd87-6d83-438e-aefc-97a74a5d776a" message="#[payload]"/>
+		<set-variable value="#[&quot;Insert into table_name(col1, col2, col3) values ('&quot; ++ payload.abc ++ &quot;','newValue', Datetime()&quot;]" doc:name="Set Query" doc:id="84c2f5ae-1e81-4381-8a39-f66556fcf8df" variableName="InsertQuery"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d43ccf95-aace-4f8d-8e56-ee343d4b3843" message="#[vars.InsertQuery]"/>
+		<wsc:consume doc:name="Consume" doc:id="4d80ce65-f34d-48b3-ba94-9ae9b74d4332" config-ref="Web_Service_Consumer_Config" operation="pushBatchControl"/>
+		<http:request method="GET" doc:name="Request" doc:id="fd04eb4e-e066-43df-928f-c48beb743ff8" >
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"Key-2" : "Value",
+	"Key" : "Value",
+	"Key-1" : "Value",
+	"Key-4" : "Value",
+	"Key-3" : "Value",
+	"Key-6" : "Value",
+	"Key-5" : "Value",
+	"Key-8" : "Value",
+	"Key-7" : "Value",
+	"Key-9" : "Value"
+}]]]></http:query-params>
+		</http:request>
+	</flow>
+</mule>

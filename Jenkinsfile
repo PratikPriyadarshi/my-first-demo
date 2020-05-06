@@ -3,7 +3,7 @@ node{
     git 'https://github.com/PratikPriyadarshi/my-first-demo'
   }
   stage('Compile-Package'){
-    def mvn_version = 'M3'
+    def mvn_version = 'Maven'
 withEnv( ["PATH+MAVEN=${tool mvn_version}/bin"] ) {
   sh "mvn clean package"
 }
